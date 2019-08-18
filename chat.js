@@ -46,7 +46,7 @@ class Chat {
 
     formatDate(seconds) {
         const d = new Date(seconds * 1000);
-        return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDay()
+        return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate()
             + ' ' + d.getHours()
             + ':' + d.getMinutes().toString().padStart(2, '0')
             + ':' + d.getSeconds().toString().padStart(2, '0');
