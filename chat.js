@@ -17,14 +17,15 @@ class Chat {
                 return (change.type === 'added' && change.doc.data().createdAt)
                     || change.type === 'modified'
             }).forEach(change => {
-                this.onAdd(change.doc.data());
+                const el = this.createMessageEl(change.doc.data());
+                this.messagesDiv.insertBefore(el, this.messagesDiv.firstChild);
             });
         }, error => {
             alert(`Error listening collection: ${error}`);
         });
     }
 
-    onAdd(data) {
+    createMessageEl(data) {
         const containerDiv = document.createElement('div');
         const userDiv = document.createElement('div');
         const timeDiv = document.createElement('div');
@@ -41,7 +42,7 @@ class Chat {
         containerDiv.appendChild(userDiv);
         containerDiv.appendChild(timeDiv);
         containerDiv.appendChild(pre);
-        this.messagesDiv.insertBefore(containerDiv, this.messagesDiv.firstChild);
+        return containerDiv;
     }
 
     formatDate(seconds) {
