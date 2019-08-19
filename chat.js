@@ -1,8 +1,8 @@
 class Chat {
-    constructor(el) {
+    constructor(el, collectionName) {
         this.el = el;
         const db = firebase.firestore();
-        this.collection = db.collection('messages');
+        this.collection = db.collection(collectionName || 'messages');
         this.messagesDiv = el.querySelector('.messages');
 
         this.listenCollection();
