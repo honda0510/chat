@@ -38,7 +38,8 @@ class Chat {
         userDiv.textContent = data.user || '(匿名)';
         timeDiv.textContent = this.formatDate(data.createdAt.seconds);
         pre.textContent = data.message;
-        
+        pre.innerHTML = this.urlToAnchor(pre.innerHTML);
+
         containerDiv.appendChild(userDiv);
         containerDiv.appendChild(timeDiv);
         containerDiv.appendChild(pre);
@@ -51,6 +52,10 @@ class Chat {
             + ' ' + d.getHours()
             + ':' + d.getMinutes().toString().padStart(2, '0')
             + ':' + d.getSeconds().toString().padStart(2, '0');
+    }
+
+    urlToAnchor(text) {
+        return text.replace(/https?:\/\/\S+/i, '<a href="$&" target="_blank">$&</a>');
     }
 
     listenForm() {
