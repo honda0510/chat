@@ -64,7 +64,7 @@ class Chat {
                 return;
             }
 
-            this.add(user, message).then(docRef => {
+            this.post(user, message).then(docRef => {
                 messageArea.value = '';
             }).catch(error => {
                 alert(`Error adding a message: ${error}`);
@@ -72,7 +72,7 @@ class Chat {
         })
     }
 
-    add(user, message) {
+    post(user, message) {
         return this.collection.add({
             user,
             message,
