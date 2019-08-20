@@ -55,7 +55,7 @@ class Chat {
     }
 
     urlToAnchor(text) {
-        return text.replace(/https?:\/\/\S+/i, '<a href="$&" target="_blank">$&</a>');
+        return text.replace(/https?:\/\/\S+/ig, '<a href="$&" target="_blank">$&</a>');
     }
 
     listenForm() {
