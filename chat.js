@@ -15,7 +15,7 @@ class Chat {
         }, snapshot => {
             snapshot.docChanges().filter(change => {
                 return (change.type === 'added' && change.doc.data().createdAt)
-                    || change.type === 'modified'
+                    || change.type === 'modified';
             }).forEach(change => {
                 const el = this.createMessageEl(change.doc.data());
                 this.messagesDiv.insertBefore(el, this.messagesDiv.firstChild);
@@ -75,7 +75,7 @@ class Chat {
             }).catch(error => {
                 alert(`Error adding a message: ${error}`);
             });
-        })
+        });
     }
 
     post(user, message) {
