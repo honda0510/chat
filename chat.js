@@ -76,6 +76,12 @@ class Chat {
                 alert(`Error adding a message: ${error}`);
             });
         });
+
+        messageArea.addEventListener('keydown', event => {
+            if (event.code.endsWith('Enter') && (event.ctrlKey || event.metaKey)) {
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
     }
 
     post(user, message) {
