@@ -78,7 +78,7 @@ class Chat {
         });
 
         messageArea.addEventListener('keydown', event => {
-            if (event.code.endsWith('Enter') && (event.ctrlKey || event.metaKey)) {
+            if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
                 form.dispatchEvent(new Event('submit'));
             }
         });
