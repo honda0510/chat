@@ -49,9 +49,31 @@ class Chat {
     formatDate(seconds) {
         const d = new Date(seconds * 1000);
         return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate()
+            + '(' + this.jpDay(d.getDay()) + ')'
             + ' ' + d.getHours()
             + ':' + d.getMinutes().toString().padStart(2, '0')
             + ':' + d.getSeconds().toString().padStart(2, '0');
+    }
+
+    jpDay(day) {
+        switch (day) {
+            case 0:
+                return '日';
+            case 1:
+                return '月';
+            case 2:
+                return '火';
+            case 3:
+                return '水';
+            case 4:
+                return '木';
+            case 5:
+                return '金';
+            case 6:
+                return '土';
+            default:
+                throw new RangeError('The argument must be between 0 and 6.');
+        }
     }
 
     urlToAnchor(text) {
