@@ -22,3 +22,6 @@
     width: 50%;
 }
 
+.chat .messages pre {
+    white-space: pre-wrap;
+}
