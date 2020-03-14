@@ -1,3 +1,5 @@
+/* .input-form */
+
 .chat .input-form .user, .chat .input-form .message {
     font-size: 1.2rem;
 }
@@ -27,16 +29,32 @@
     height: 25px;
 }
 
-.chat .messages {
+/* .messages */
+
+.chat .stars, .chat .messages {
     margin-top: 20px;
 }
 
-.chat .messages header {
+.chat .message header {
     display: flex;
     justify-content: space-between;
 }
 
-.chat .messages pre {
+.chat .message .user {
+    flex-grow: 2;
+}
+
+.chat .message .star {
+    padding-left: 30px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.chat .message .stared {
+    color: gold;
+}
+
+.chat .message pre {
     white-space: pre-wrap;
 }
 

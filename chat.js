@@ -5,12 +5,14 @@ class Chat {
         const db = firebase.firestore();
         this.collection = db.collection(collectionName || 'messages');
         this.mute = el.querySelector('input.mute');
+        this.stars = el.querySelector('.stars');
         this.messages = el.querySelector('.messages');
 
         this.initializeSound();
         this.listenCollection();
         this.listenForm();
         this.listenReadAllButton();
+        this.listenStars();
     }
 
     listenCollection() {
@@ -22,6 +24,7 @@ class Chat {
                     || change.type === 'modified';
             }).forEach(change => {
                 const el = this.createMessageEl(change.doc.data());
+                el.setAttribute('data-id', change.doc.id);
                 this.messages.insertBefore(el, this.messages.firstChild);
                 if (!this.mute.checked) {
                     this.sound.play();
@@ -37,6 +40,7 @@ class Chat {
         const header = document.createElement('header');
         const userDiv = document.createElement('div');
         const timeDiv = document.createElement('div');
+        const starDiv = document.createElement('div');
         const pre = document.createElement('pre');
 
         containerDiv.classList.add('message');
@@ -45,14 +49,17 @@ class Chat {
         }
         userDiv.classList.add('user');
         timeDiv.classList.add('time');
+        starDiv.classList.add('star');
 
         userDiv.textContent = data.user || '(匿名)';
         timeDiv.textContent = this.formatDate(data.createdAt.seconds);
+        starDiv.textContent = '☆';
         pre.textContent = data.message;
         pre.innerHTML = this.urlToAnchor(pre.innerHTML);
 
         header.appendChild(userDiv);
         header.appendChild(timeDiv);
+        header.appendChild(starDiv);
         containerDiv.appendChild(header);
         containerDiv.appendChild(pre);
         return containerDiv;
@@ -137,5 +144,40 @@ class Chat {
                 el.classList.remove('unread');
             });
         });
+    }
+
+    listenStars() {
+        [this.stars, this.messages].forEach(el => {
+            el.addEventListener('click', event => {
+                if (!event.target.classList.contains('star')) {
+                    return;
+                }
+    
+                const star = event.target;
+                const id = star.closest('.message').getAttribute('data-id');
+                if (star.classList.contains('stared')) {
+                    this.onUnStar(id);
+                } else {
+                    this.onStar(id);
+                }
+            });
+        });
+    }
+
+    onStar(id) {
+        const message = this.messages.querySelector(`[data-id="${id}"]`);
+        const star = message.querySelector('.star');
+        star.classList.add('stared');
+        star.textContent = '★';
+        this.stars.appendChild(message.cloneNode(true));
+    }
+
+    onUnStar(id) {
+        const message = this.stars.querySelector(`[data-id="${id}"]`);
+        this.stars.removeChild(message);
+
+        const star = this.messages.querySelector(`[data-id="${id}"] .star`);
+        star.classList.remove('stared');
+        star.textContent = '☆';
     }
 }
