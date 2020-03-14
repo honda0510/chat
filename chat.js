@@ -5,6 +5,7 @@ class Chat {
         this.collection = db.collection(collectionName || 'messages');
         this.messagesDiv = el.querySelector('.messages');
 
+        this.initializeSound();
         this.listenCollection();
         this.listenForm();
     }
@@ -19,6 +20,7 @@ class Chat {
             }).forEach(change => {
                 const el = this.createMessageEl(change.doc.data());
                 this.messagesDiv.insertBefore(el, this.messagesDiv.firstChild);
+                this.sound.play();
             });
         }, error => {
             alert(`Error listening collection: ${error}`);
@@ -78,6 +80,10 @@ class Chat {
 
     urlToAnchor(text) {
         return text.replace(/https?:\/\/\S+/ig, '<a href="$&" target="_blank">$&</a>');
+    }
+
+    initializeSound() {
+        this.sound = new Audio('message.mp3');
     }
 
     listenForm() {
