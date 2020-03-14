@@ -24,8 +24,8 @@
     justify-content: space-between;
 }
 
-.chat .input-form button.submit {
-    width: 50px;
+.chat .input-form button {
+    width: 70px;
     height: 25px;
 }
 
