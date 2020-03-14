@@ -191,7 +191,7 @@ class Chat {
         const blob = new Blob([text], {type: 'text/plain'});
         const url = window.URL.createObjectURL(blob);
         a.href = url;
-        a.download = 'chat.txt';
+        a.download = `chat-${this.collection.id}.txt`;
         a.click();
         window.URL.revokeObjectURL(url);
     }
