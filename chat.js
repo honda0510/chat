@@ -19,26 +19,36 @@ class Chat {
 
         this.initializeSound();
         this.listenCollection();
-        this.listenForm();
-        this.listenReadAllButton();
-        this.listenRaiseHandButton();
-        this.listenStars();
+        el.querySelector('form.input-form').addEventListener('submit', this.onSubmit.bind(this));
+        this.message.addEventListener('keydown', this.onKeydownInMessage.bind(this));
+        el.querySelector('button.read-all').addEventListener('click', this.onReadAllBtnClick.bind(this));
+        el.querySelector('button.raise-hand').addEventListener('click', this.onRaiseHandBtnClick.bind(this));
+
+        const handler = this.onMsgContainerClick.bind(this);
+        this.stars.addEventListener('click', handler);
+        this.messages.addEventListener('click', handler);
+    }
+
+    initializeSound() {
+        this.sound = new Audio('message.mp3');
     }
 
     listenCollection() {
         this.collection.orderBy('createdAt').onSnapshot({
             includeMetadataChanges: true,
         }, snapshot => {
-            snapshot.docChanges().filter(change => {
+            const changes = snapshot.docChanges().filter(change => {
                 return (change.type === 'added' && change.doc.data().createdAt)
                     || change.type === 'modified';
-            }).forEach(change => {
+            });
+            changes.forEach(change => {
                 const data = change.doc.data();
                 this.addReceiver(data.user);
 
                 const el = this.createMessageEl(data);
                 el.setAttribute('data-id', change.doc.id);
                 this.messages.insertBefore(el, this.messages.firstChild);
+
                 if (!this.mute.checked) {
                     this.sound.play();
                 }
@@ -46,6 +56,20 @@ class Chat {
         }, error => {
             alert(`Error listening collection: ${error}`);
         });
+    }
+
+    addReceiver(user) {
+        if (this.user.value === user) {
+            return;
+        }
+        if (this.receivers.includes(user)) {
+            return;
+        }
+        this.receivers.push(user);
+
+        const option = document.createElement('option');
+        option.text = user;
+        this.receiver.appendChild(option);
     }
 
     createMessageEl(data) {
@@ -112,49 +136,21 @@ class Chat {
         return text.replace(/https?:\/\/\S+/ig, '<a href="$&" target="_blank">$&</a>');
     }
 
-    addReceiver(user) {
-        if (this.user.value === user) {
+    onSubmit(event) {
+        event.preventDefault();
+        const [user, message] = [this.user.value, this.message.value];
+        if (user.length === 0) {
+            alert('なまえを入力してください。');
             return;
         }
-        if (this.receivers.includes(user)) {
+        if (message.length === 0) {
             return;
         }
-        this.receivers.push(user);
 
-        const option = document.createElement('option');
-        option.text = user;
-        this.receiver.appendChild(option);
-    }
-
-    initializeSound() {
-        this.sound = new Audio('message.mp3');
-    }
-
-    listenForm() {
-        const form = this.el.querySelector('form.input-form');
-
-        form.addEventListener('submit', event => {
-            event.preventDefault();
-            const [user, message] = [this.user.value, this.message.value];
-            if (user.length === 0) {
-                alert('なまえを入力してください。');
-                return;
-            }
-            if (message.length === 0) {
-                return;
-            }
-
-            this.post(user, this.receiver.value, message).then(docRef => {
-                this.message.value = '';
-            }).catch(error => {
-                alert(`Error adding a message: ${error}`);
-            });
-        });
-
-        this.message.addEventListener('keydown', event => {
-            if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-                form.dispatchEvent(new Event('submit'));
-            }
+        this.post(user, this.receiver.value, message).then(docRef => {
+            this.message.value = '';
+        }).catch(error => {
+            alert(`Error adding a message: ${error}`);
         });
     }
 
@@ -167,44 +163,40 @@ class Chat {
         });
     }
 
-    listenReadAllButton() {
-        const button = this.el.querySelector('button.read-all');
-        button.addEventListener('click', event => {
-            this.el.querySelectorAll('.message.unread').forEach(el => {
-                el.classList.remove('unread');
-            });
+    onKeydownInMessage(event) {
+        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+            event.target.closest('form').dispatchEvent(new Event('submit'));
+        }
+    }
+
+    onReadAllBtnClick(event) {
+        this.el.querySelectorAll('.message.unread').forEach(el => {
+            el.classList.remove('unread');
         });
     }
 
-    listenRaiseHandButton() {
-        const button = this.el.querySelector('button.raise-hand');
-        button.addEventListener('click', event => {
-            const user = this.user.value;
-            if (user.length === 0) {
-                alert('なまえを入力してください。');
-                return;
-            }
-            const message = `${user}さんが手を挙げました。`;
-            this.post(user, this.receiver.value, message);
-        });
+    onRaiseHandBtnClick(event) {
+        const user = this.user.value;
+        if (user.length === 0) {
+            alert('なまえを入力してください。');
+            return;
+        }
+        const message = `${user}さんが手を挙げました。`;
+        this.post(user, this.receiver.value, message);
     }
 
-    listenStars() {
-        [this.stars, this.messages].forEach(el => {
-            el.addEventListener('click', event => {
-                if (!event.target.classList.contains('star')) {
-                    return;
-                }
-    
-                const star = event.target;
-                const id = star.closest('.message').getAttribute('data-id');
-                if (star.classList.contains('stared')) {
-                    this.onUnStar(id);
-                } else {
-                    this.onStar(id);
-                }
-            });
-        });
+    onMsgContainerClick(event) {
+        if (!event.target.classList.contains('star')) {
+            return;
+        }
+
+        const star = event.target;
+        const id = star.closest('.message').getAttribute('data-id');
+        if (star.classList.contains('stared')) {
+            this.onUnStar(id);
+        } else {
+            this.onStar(id);
+        }
     }
 
     onStar(id) {
