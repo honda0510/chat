@@ -33,7 +33,10 @@
     <script src="firebase.config.js"></script>
     <script src="chat.js"></script>
     <script>
-        new Chat(document.querySelector('.chat'));
+        const el = document.querySelector('.chat');
+        const found = location.search.match(/\bname=(\w+)\b/);
+        const name = found ? found[1] : 'test';
+        new Chat(el, name);
     </script>
 </body>
 </html>
