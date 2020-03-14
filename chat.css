@@ -2,6 +2,15 @@
     font-size: 1.2rem;
 }
 
+.chat .input-form .top {
+    display: flex;
+    justify-content: space-between;
+}
+
+.chat .input-form .mute-label {
+    user-select: none;
+}
+
 .chat .input-form .message {
     width: 100%;
     height: 80px;
