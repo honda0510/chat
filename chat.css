@@ -31,9 +31,9 @@
     margin-top: 20px;
 }
 
-.chat .messages .user, .chat .messages .time {
-    display: inline-block;
-    width: 50%;
+.chat .messages header {
+    display: flex;
+    justify-content: space-between;
 }
 
 .chat .messages pre {

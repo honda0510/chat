@@ -34,6 +34,7 @@ class Chat {
 
     createMessageEl(data) {
         const containerDiv = document.createElement('div');
+        const header = document.createElement('header');
         const userDiv = document.createElement('div');
         const timeDiv = document.createElement('div');
         const pre = document.createElement('pre');
@@ -50,8 +51,9 @@ class Chat {
         pre.textContent = data.message;
         pre.innerHTML = this.urlToAnchor(pre.innerHTML);
 
-        containerDiv.appendChild(userDiv);
-        containerDiv.appendChild(timeDiv);
+        header.appendChild(userDiv);
+        header.appendChild(timeDiv);
+        containerDiv.appendChild(header);
         containerDiv.appendChild(pre);
         return containerDiv;
     }
