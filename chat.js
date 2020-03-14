@@ -1,9 +1,13 @@
 class Chat {
     constructor(el, collectionName) {
+        if (!collectionName) {
+            throw 'collectionName is required';
+        }
+
         this.startedAt = Math.trunc(Date.now() / 1000);
         this.el = el;
         const db = firebase.firestore();
-        this.collection = db.collection(collectionName || 'messages');
+        this.collection = db.collection(collectionName);
         this.mute = el.querySelector('input.mute');
         this.stars = el.querySelector('.stars');
         this.messages = el.querySelector('.messages');
