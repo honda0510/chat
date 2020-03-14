@@ -81,9 +81,9 @@ class Chat {
     }
 
     listenForm() {
-        const form = this.el.querySelector('.input-form');
-        const userNameArea = form.querySelector('.user');
-        const messageArea = form.querySelector('.message');
+        const form = this.el.querySelector('form.input-form');
+        const userNameArea = form.querySelector('input.user');
+        const messageArea = form.querySelector('textarea.message');
 
         form.addEventListener('submit', event => {
             event.preventDefault();
