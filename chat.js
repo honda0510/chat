@@ -116,6 +116,10 @@ class Chat {
         form.addEventListener('submit', event => {
             event.preventDefault();
             const [user, message] = [this.user.value, this.message.value];
+            if (user.length === 0) {
+                alert('なまえを入力してください。');
+                return;
+            }
             if (message.length === 0) {
                 return;
             }
