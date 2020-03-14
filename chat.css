@@ -29,8 +29,12 @@
 }
 
 .chat .input-form button {
-    width: 70px;
+    min-width: 70px;
     height: 25px;
+}
+
+.chat .input-form .download {
+    display: none;
 }
 
 /* .messages */
