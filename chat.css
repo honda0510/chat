@@ -35,6 +35,11 @@
 
 /* .messages */
 
+.chat .stars {
+    border-bottom: 1px solid gray;
+    margin-bottom: 10px;
+}
+
 .chat .stars, .chat .messages {
     margin-top: 20px;
 }
