@@ -18,12 +18,17 @@
 }
 
 .chat .input-form .buttons {
-    text-align: right;
+    display: flex;
+    justify-content: space-between;
 }
 
 .chat .input-form button.submit {
     width: 50px;
     height: 25px;
+}
+
+.chat .messages {
+    margin-top: 20px;
 }
 
 .chat .messages .user, .chat .messages .time {
@@ -33,4 +38,9 @@
 
 .chat .messages pre {
     white-space: pre-wrap;
+}
+
+.chat .message.unread {
+    color: blue;
+    font-weight: bold;
 }

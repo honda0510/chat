@@ -1,5 +1,6 @@
 class Chat {
     constructor(el, collectionName) {
+        this.startedAt = Math.trunc(Date.now() / 1000);
         this.el = el;
         const db = firebase.firestore();
         this.collection = db.collection(collectionName || 'messages');
@@ -9,6 +10,7 @@ class Chat {
         this.initializeSound();
         this.listenCollection();
         this.listenForm();
+        this.listenReadAllButton();
     }
 
     listenCollection() {
@@ -37,6 +39,9 @@ class Chat {
         const pre = document.createElement('pre');
 
         containerDiv.classList.add('message');
+        if (data.createdAt.seconds > this.startedAt) {
+            containerDiv.classList.add('unread');
+        }
         userDiv.classList.add('user');
         timeDiv.classList.add('time');
 
@@ -120,6 +125,15 @@ class Chat {
             user,
             message,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+    }
+
+    listenReadAllButton() {
+        const button = this.el.querySelector('button.read-all');
+        button.addEventListener('click', event => {
+            this.el.querySelectorAll('.message.unread').forEach(el => {
+                el.classList.remove('unread');
+            });
         });
     }
 }
