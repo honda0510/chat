@@ -5,7 +5,7 @@ class Chat {
         const db = firebase.firestore();
         this.collection = db.collection(collectionName || 'messages');
         this.mute = el.querySelector('input.mute');
-        this.messagesDiv = el.querySelector('.messages');
+        this.messages = el.querySelector('.messages');
 
         this.initializeSound();
         this.listenCollection();
@@ -22,7 +22,7 @@ class Chat {
                     || change.type === 'modified';
             }).forEach(change => {
                 const el = this.createMessageEl(change.doc.data());
-                this.messagesDiv.insertBefore(el, this.messagesDiv.firstChild);
+                this.messages.insertBefore(el, this.messages.firstChild);
                 if (!this.mute.checked) {
                     this.sound.play();
                 }
