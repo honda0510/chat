@@ -11,9 +11,11 @@ class Chat {
 
         this.mute = el.querySelector('input.mute');
         this.user = el.querySelector('input.user');
+        this.receiver = el.querySelector('select.receiver');
         this.message = el.querySelector('textarea.message');
         this.stars = el.querySelector('.stars');
         this.messages = el.querySelector('.messages');
+        this.receivers = [];
 
         this.initializeSound();
         this.listenCollection();
@@ -31,7 +33,10 @@ class Chat {
                 return (change.type === 'added' && change.doc.data().createdAt)
                     || change.type === 'modified';
             }).forEach(change => {
-                const el = this.createMessageEl(change.doc.data());
+                const data = change.doc.data();
+                this.addReceiver(data.user);
+
+                const el = this.createMessageEl(data);
                 el.setAttribute('data-id', change.doc.id);
                 this.messages.insertBefore(el, this.messages.firstChild);
                 if (!this.mute.checked) {
@@ -59,7 +64,7 @@ class Chat {
         timeDiv.classList.add('time');
         starDiv.classList.add('star');
 
-        userDiv.textContent = data.user || '(匿名)';
+        userDiv.textContent = (data.user || '(匿名)') + (data.receiver ? ` => ${data.receiver}` : '');
         timeDiv.textContent = this.formatDate(data.createdAt.seconds);
         starDiv.textContent = '☆';
         pre.textContent = data.message;
@@ -107,6 +112,20 @@ class Chat {
         return text.replace(/https?:\/\/\S+/ig, '<a href="$&" target="_blank">$&</a>');
     }
 
+    addReceiver(user) {
+        if (this.user.value === user) {
+            return;
+        }
+        if (this.receivers.includes(user)) {
+            return;
+        }
+        this.receivers.push(user);
+
+        const option = document.createElement('option');
+        option.text = user;
+        this.receiver.appendChild(option);
+    }
+
     initializeSound() {
         this.sound = new Audio('message.mp3');
     }
@@ -125,7 +144,7 @@ class Chat {
                 return;
             }
 
-            this.post(user, message).then(docRef => {
+            this.post(user, this.receiver.value, message).then(docRef => {
                 this.message.value = '';
             }).catch(error => {
                 alert(`Error adding a message: ${error}`);
@@ -139,9 +158,10 @@ class Chat {
         });
     }
 
-    post(user, message) {
+    post(user, receiver, message) {
         return this.collection.add({
             user,
+            receiver,
             message,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
@@ -164,7 +184,8 @@ class Chat {
                 alert('なまえを入力してください。');
                 return;
             }
-            this.post(user, `${user}さんが手を挙げました。`)
+            const message = `${user}さんが手を挙げました。`;
+            this.post(user, this.receiver.value, message);
         });
     }
 

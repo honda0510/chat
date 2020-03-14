@@ -15,8 +15,16 @@
     <div class="chat">
         <form action="#" class="input-form">
             <div class="top">
-                <input type="text" class="user" placeholder="なまえ">
-                <label class="mute-label"><input type="checkbox" class="mute" checked>ミュート</label>
+                <div class="left-side">
+                    <input type="text" class="user" placeholder="なまえ">
+                    <label>送信先:</label>
+                    <select class="receiver">
+                        <option value="">全員</option>
+                    </select>
+                </div>
+                <div class="right-side">
+                    <label class="mute-label"><input type="checkbox" class="mute" checked>ミュート</label>
+                </div>
             </div>
             <div><textarea class="message" placeholder="いまどうしてる？"></textarea></div>
             <div class="buttons">

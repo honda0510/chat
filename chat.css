@@ -1,5 +1,9 @@
 /* .input-form */
 
+.chat .input-form .user {
+    margin-right: 10px;
+}
+
 .chat .input-form .user, .chat .input-form .message {
     font-size: 1.2rem;
 }
