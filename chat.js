@@ -8,7 +8,10 @@ class Chat {
         this.el = el;
         const db = firebase.firestore();
         this.collection = db.collection(collectionName);
+
         this.mute = el.querySelector('input.mute');
+        this.user = el.querySelector('input.user');
+        this.message = el.querySelector('textarea.message');
         this.stars = el.querySelector('.stars');
         this.messages = el.querySelector('.messages');
 
@@ -109,24 +112,22 @@ class Chat {
 
     listenForm() {
         const form = this.el.querySelector('form.input-form');
-        const userNameArea = form.querySelector('input.user');
-        const messageArea = form.querySelector('textarea.message');
 
         form.addEventListener('submit', event => {
             event.preventDefault();
-            const [user, message] = [userNameArea.value, messageArea.value];
+            const [user, message] = [this.user.value, this.message.value];
             if (message.length === 0) {
                 return;
             }
 
             this.post(user, message).then(docRef => {
-                messageArea.value = '';
+                this.message.value = '';
             }).catch(error => {
                 alert(`Error adding a message: ${error}`);
             });
         });
 
-        messageArea.addEventListener('keydown', event => {
+        this.message.addEventListener('keydown', event => {
             if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
                 form.dispatchEvent(new Event('submit'));
             }
