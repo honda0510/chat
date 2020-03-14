@@ -13,20 +13,22 @@ class Chat {
         this.user = el.querySelector('input.user');
         this.receiver = el.querySelector('select.receiver');
         this.message = el.querySelector('textarea.message');
-        this.stars = el.querySelector('.stars');
-        this.messages = el.querySelector('.messages');
+        this.starContainer = el.querySelector('.stars');
+        this.msgContainer = el.querySelector('.messages');
         this.receivers = [];
+        this.messages = [];
 
         this.initializeSound();
         this.listenCollection();
         el.querySelector('form.input-form').addEventListener('submit', this.onSubmit.bind(this));
         this.message.addEventListener('keydown', this.onKeydownInMessage.bind(this));
+        el.querySelector('button.download').addEventListener('click', this.onDownloadBtnClick.bind(this));
         el.querySelector('button.read-all').addEventListener('click', this.onReadAllBtnClick.bind(this));
         el.querySelector('button.raise-hand').addEventListener('click', this.onRaiseHandBtnClick.bind(this));
 
         const handler = this.onMsgContainerClick.bind(this);
-        this.stars.addEventListener('click', handler);
-        this.messages.addEventListener('click', handler);
+        this.starContainer.addEventListener('click', handler);
+        this.msgContainer.addEventListener('click', handler);
     }
 
     initializeSound() {
@@ -45,9 +47,11 @@ class Chat {
                 const data = change.doc.data();
                 this.addReceiver(data.user);
 
-                const el = this.createMessageEl(data);
+                const formattedData = this.formatMessage(data);
+                this.messages.push(formattedData);
+                const el = this.createMessageEl(formattedData);
                 el.setAttribute('data-id', change.doc.id);
-                this.messages.insertBefore(el, this.messages.firstChild);
+                this.msgContainer.insertBefore(el, this.msgContainer.firstChild);
 
                 if (!this.mute.checked) {
                     this.sound.play();
@@ -56,6 +60,45 @@ class Chat {
         }, error => {
             alert(`Error listening collection: ${error}`);
         });
+    }
+
+    formatMessage(data) {
+        return {
+            formattedUser: (data.user || '(匿名)') + (data.receiver ? ` => ${data.receiver}` : ''),
+            formattedTime: this.formatDate(data.createdAt.seconds),
+            createdAt: data.createdAt,
+            message: data.message,
+        };
+    }
+
+    formatDate(seconds) {
+        const d = new Date(seconds * 1000);
+        return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate()
+            + '(' + this.jpDay(d.getDay()) + ')'
+            + ' ' + d.getHours()
+            + ':' + d.getMinutes().toString().padStart(2, '0')
+            + ':' + d.getSeconds().toString().padStart(2, '0');
+    }
+
+    jpDay(day) {
+        switch (day) {
+            case 0:
+                return '日';
+            case 1:
+                return '月';
+            case 2:
+                return '火';
+            case 3:
+                return '水';
+            case 4:
+                return '木';
+            case 5:
+                return '金';
+            case 6:
+                return '土';
+            default:
+                throw new RangeError('The argument must be between 0 and 6.');
+        }
     }
 
     addReceiver(user) {
@@ -88,8 +131,8 @@ class Chat {
         timeDiv.classList.add('time');
         starDiv.classList.add('star');
 
-        userDiv.textContent = (data.user || '(匿名)') + (data.receiver ? ` => ${data.receiver}` : '');
-        timeDiv.textContent = this.formatDate(data.createdAt.seconds);
+        userDiv.textContent = data.formattedUser;
+        timeDiv.textContent = data.formattedTime;
         starDiv.textContent = '☆';
         pre.textContent = data.message;
         pre.innerHTML = this.urlToAnchor(pre.innerHTML);
@@ -100,36 +143,6 @@ class Chat {
         containerDiv.appendChild(header);
         containerDiv.appendChild(pre);
         return containerDiv;
-    }
-
-    formatDate(seconds) {
-        const d = new Date(seconds * 1000);
-        return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate()
-            + '(' + this.jpDay(d.getDay()) + ')'
-            + ' ' + d.getHours()
-            + ':' + d.getMinutes().toString().padStart(2, '0')
-            + ':' + d.getSeconds().toString().padStart(2, '0');
-    }
-
-    jpDay(day) {
-        switch (day) {
-            case 0:
-                return '日';
-            case 1:
-                return '月';
-            case 2:
-                return '火';
-            case 3:
-                return '水';
-            case 4:
-                return '木';
-            case 5:
-                return '金';
-            case 6:
-                return '土';
-            default:
-                throw new RangeError('The argument must be between 0 and 6.');
-        }
     }
 
     urlToAnchor(text) {
@@ -169,6 +182,20 @@ class Chat {
         }
     }
 
+    onDownloadBtnClick(event) {
+        const text = this.messages.map(data => {
+            return [data.formattedTime, data.formattedUser, data.message].join('\t');
+        }).join('\n');
+
+        const a = document.createElement('a');
+        const blob = new Blob([text], {type: 'text/plain'});
+        const url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = 'chat.txt';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+
     onReadAllBtnClick(event) {
         this.el.querySelectorAll('.message.unread').forEach(el => {
             el.classList.remove('unread');
@@ -200,18 +227,18 @@ class Chat {
     }
 
     onStar(id) {
-        const message = this.messages.querySelector(`[data-id="${id}"]`);
+        const message = this.msgContainer.querySelector(`[data-id="${id}"]`);
         const star = message.querySelector('.star');
         star.classList.add('stared');
         star.textContent = '★';
-        this.stars.appendChild(message.cloneNode(true));
+        this.starContainer.appendChild(message.cloneNode(true));
     }
 
     onUnStar(id) {
-        const message = this.stars.querySelector(`[data-id="${id}"]`);
-        this.stars.removeChild(message);
+        const message = this.starContainer.querySelector(`[data-id="${id}"]`);
+        this.starContainer.removeChild(message);
 
-        const star = this.messages.querySelector(`[data-id="${id}"] .star`);
+        const star = this.msgContainer.querySelector(`[data-id="${id}"] .star`);
         star.classList.remove('stared');
         star.textContent = '☆';
     }

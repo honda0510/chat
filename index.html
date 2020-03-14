@@ -51,11 +51,6 @@
         const found = location.search.match(/\bname=(\w+)\b/);
         const name = found ? found[1] : 'test';
         new Chat(el, name);
-
-        const isAdmin = location.search.substring(1).split('&').includes('admin');
-        if (isAdmin) {
-            el.querySelector('button.download').style.display = 'inline-block';
-        }
     </script>
 </body>
 </html>
