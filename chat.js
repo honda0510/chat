@@ -19,6 +19,7 @@ class Chat {
         this.listenCollection();
         this.listenForm();
         this.listenReadAllButton();
+        this.listenRaiseHandButton();
         this.listenStars();
     }
 
@@ -152,6 +153,18 @@ class Chat {
             this.el.querySelectorAll('.message.unread').forEach(el => {
                 el.classList.remove('unread');
             });
+        });
+    }
+
+    listenRaiseHandButton() {
+        const button = this.el.querySelector('button.raise-hand');
+        button.addEventListener('click', event => {
+            const user = this.user.value;
+            if (user.length === 0) {
+                alert('なまえを入力してください。');
+                return;
+            }
+            this.post(user, `${user}さんが手を挙げました。`)
         });
     }
 
