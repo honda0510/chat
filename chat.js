@@ -157,6 +157,7 @@ class Chat {
             return;
         }
         if (message.length === 0) {
+            alert('メッセージを入力してください。');
             return;
         }
 
