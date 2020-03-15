@@ -47,9 +47,9 @@
     <script src="chat.js"></script>
     <script>
         const el = document.querySelector('.chat');
-        const found = location.search.match(/\bname=(\w+)\b/);
-        const name = found ? found[1] : 'test';
-        new Chat(el, name);
+        const found = location.search.match(/\broom=(\w+)\b/);
+        const room = found ? found[1] : 'test';
+        new Chat(el, room);
     </script>
 </body>
 </html>

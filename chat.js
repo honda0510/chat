@@ -1,13 +1,13 @@
 class Chat {
-    constructor(el, collectionName) {
-        if (!collectionName) {
-            throw 'collectionName is required';
+    constructor(el, room) {
+        if (!room) {
+            throw 'room is required';
         }
 
         this.startedAt = Math.trunc(Date.now() / 1000);
         this.el = el;
         const db = firebase.firestore();
-        this.collection = db.collection(collectionName);
+        this.collection = db.collection(room);
 
         this.mute = el.querySelector('input.mute');
         this.user = el.querySelector('input.user');
